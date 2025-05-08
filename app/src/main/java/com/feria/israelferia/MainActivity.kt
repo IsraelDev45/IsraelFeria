@@ -19,6 +19,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.ui.platform.LocalContext
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,10 +49,18 @@ fun MainScreen(onNavigateToSecondActivity: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            BusinessItem("Negocios de la Nave 1")
-            BusinessItem("Negocios de la Nave 2")
-            BusinessItem("Negocios de la Nave 3")
-            BusinessItem("Atracciones y Concierto") // Nueva card
+            BusinessItem("Nave 1", R.drawable.nave1) { context ->
+                context.startActivity(Intent(context, Nave1Activity::class.java))
+            }
+            BusinessItem("Nave 2", R.drawable.nave2) { context ->
+                context.startActivity(Intent(context, Nave2Activity::class.java))
+            }
+            BusinessItem("Nave 3", R.drawable.nave3) { context ->
+                context.startActivity(Intent(context, Nave3Activity::class.java))
+            }
+            BusinessItem("Artistas y Concierto", R.drawable.artistas) { context ->
+                context.startActivity(Intent(context, ArtistasActivity::class.java))
+            }
 
             Button(
                 onClick = onNavigateToSecondActivity,
@@ -63,33 +73,44 @@ fun MainScreen(onNavigateToSecondActivity: () -> Unit) {
 }
 
 @Composable
-fun BusinessItem(text: String) {
+fun BusinessItem(nombre: String, imagen: Int, onClick: (android.content.Context) -> Unit) {
+    val context = LocalContext.current
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp),
+            .height(140.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary // Ajuste de color
+            containerColor = MaterialTheme.colorScheme.primary
         )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.logo_rest),
-                contentDescription = "Logo restaurante",
-                modifier = Modifier
-                    .size(100.dp)
-                    .padding(8.dp)
-            )
-            Text(
-                text = text,
-                modifier = Modifier.padding(8.dp),
-                style = MaterialTheme.typography.bodyLarge // Cambio de tipografía
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(id = imagen),
+                    contentDescription = "Imagen de $nombre",
+                    modifier = Modifier
+                        .size(80.dp)
+                        .padding(8.dp)
+                )
+                Text(
+                    text = nombre,
+                    modifier = Modifier.padding(8.dp),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+            Button(
+                onClick = { onClick(context) },
+                modifier = Modifier.padding(end = 8.dp)
+            ) {
+                Text("Info")
+            }
         }
     }
 }
